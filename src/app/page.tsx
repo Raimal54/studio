@@ -9,9 +9,18 @@ import { TransactionList } from "@/components/transaction-list";
 import { SpendingAdvice } from "@/components/spending-advice";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 
 export default function Home() {
   const { transactions, addTransaction, deleteTransaction, income, expenses, balance } = useTransactions();
+  const router = useRouter();
+
+  const handleTabChange = (value: string) => {
+    if (value === "invest") {
+      router.push("/invest");
+    }
+  };
 
   return (
     <main className="bg-background font-body">
@@ -22,10 +31,13 @@ export default function Home() {
           <AddTransactionDialog type="income" onAddTransaction={addTransaction} />
           <AddTransactionDialog type="expense" onAddTransaction={addTransaction} />
         </div>
-        <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+        <Tabs defaultValue="overview" className="w-full" onValueChange={handleTabChange}>
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Analysis</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
+            <TabsTrigger value="invest">
+              Investing <ArrowRight className="w-4 h-4 ml-1" />
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="mt-4">
             <SpendingAnalysis transactions={transactions} />
