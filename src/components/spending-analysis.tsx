@@ -17,11 +17,22 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@/components/ui/chart"
-import type { Transaction } from "@/lib/types"
+import { categories, type Transaction, type ExpenseCategory } from "@/lib/types"
 
 interface SpendingAnalysisProps {
   transactions: Transaction[]
 }
+
+const CATEGORY_COLORS: Record<ExpenseCategory, string> = {
+  Rent: "hsl(210, 80%, 60%)", // Blue
+  Groceries: "hsl(140, 60%, 50%)", // Green
+  Bills: "hsl(40, 90%, 60%)", // Orange
+  Transport: "hsl(260, 70%, 65%)", // Purple
+  Entertainment: "hsl(340, 85%, 65%)", // Pink
+  Health: "hsl(190, 80%, 55%)", // Cyan
+  Shopping: "hsl(50, 95%, 55%)", // Yellow
+  Other: "hsl(0, 0%, 70%)", // Gray
+};
 
 export function SpendingAnalysis({ transactions }: SpendingAnalysisProps) {
   const chartData = React.useMemo(() => {
@@ -39,14 +50,14 @@ export function SpendingAnalysis({ transactions }: SpendingAnalysisProps) {
 
   const chartConfig = React.useMemo(() => {
     const config: any = {};
-    chartData.forEach((item, index) => {
-      config[item.category] = {
-        label: item.category,
-        color: `hsl(var(--chart-${(index % 5) + 1}))`,
+    categories.expense.forEach((category) => {
+      config[category] = {
+        label: category,
+        color: CATEGORY_COLORS[category],
       };
     });
     return config;
-  }, [chartData]);
+  }, []);
 
   if (chartData.length === 0) {
     return (
@@ -86,7 +97,7 @@ export function SpendingAnalysis({ transactions }: SpendingAnalysisProps) {
               strokeWidth={5}
             >
               {chartData.map((entry, index) => (
-                 <Cell key={`cell-${index}`} fill={chartConfig[entry.category]?.color} />
+                 <Cell key={`cell-${index}`} fill={chartConfig[entry.category]?.color || CATEGORY_COLORS.Other} />
               ))}
             </Pie>
              <ChartLegend
