@@ -139,14 +139,14 @@ export function InvestmentGrowthChart() {
               <Line
                 type="monotone"
                 dataKey="invested"
-                stroke="var(--color-invested)"
+                stroke={chartConfig.invested.color}
                 strokeWidth={2}
                 dot={false}
               />
               <Line
                 type="monotone"
                 dataKey="returns"
-                stroke="var(--color-returns)"
+                stroke={chartConfig.returns.color}
                 strokeWidth={2}
                 dot={false}
               />
