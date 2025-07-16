@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, TrendingUp, BookOpen, Rocket } from "lucide-react";
 import Link from "next/link";
+import { InvestmentGrowthChart } from "@/components/investment-growth-chart";
 
 export default function InvestPage() {
   return (
@@ -26,6 +27,8 @@ export default function InvestPage() {
           </div>
           <div className="w-10"></div>
         </header>
+
+        <InvestmentGrowthChart />
 
         <Card>
           <CardHeader>
