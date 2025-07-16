@@ -22,7 +22,6 @@ export function InvestmentGrowthChart() {
     const monthlyRate = returnRate / 100 / 12
 
     for (let year = 1; year <= timePeriod; year++) {
-      let investedThisYear = (monthlyInvestment * 12 * (year - 1));
       for (let month = 1; month <= 12; month++) {
         futureValue = (futureValue + monthlyInvestment) * (1 + monthlyRate)
       }
@@ -49,6 +48,8 @@ export function InvestmentGrowthChart() {
       color: "hsl(var(--chart-1))",
     },
   }
+
+  const yAxisMax = Math.max(...chartData.map(d => d.returns), 0);
 
   return (
     <Card>
@@ -105,7 +106,7 @@ export function InvestmentGrowthChart() {
         </div>
         
         <div className="w-full">
-          <ChartContainer config={chartConfig} className="h-[250px] w-full">
+          <ChartContainer config={chartConfig} className="h-[250px]">
             <LineChart
               data={chartData}
               margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
@@ -123,7 +124,7 @@ export function InvestmentGrowthChart() {
                 axisLine={false}
                 tickMargin={8}
                 tickFormatter={(value) => formatCurrency(value)}
-                domain={['dataMin', 'dataMax']}
+                domain={[0, yAxisMax]}
               />
               <Tooltip
                 content={
@@ -139,6 +140,7 @@ export function InvestmentGrowthChart() {
                 }
               />
               <Line
+                name="Invested"
                 type="monotone"
                 dataKey="invested"
                 stroke={chartConfig.invested.color}
@@ -146,6 +148,7 @@ export function InvestmentGrowthChart() {
                 dot={false}
               />
               <Line
+                name="Returns"
                 type="monotone"
                 dataKey="returns"
                 stroke={chartConfig.returns.color}
