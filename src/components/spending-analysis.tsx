@@ -17,7 +17,7 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@/components/ui/chart"
-import { categories, type Transaction, type ExpenseCategory } from "@/lib/types"
+import { type Transaction, type ExpenseCategory } from "@/lib/types"
 
 interface SpendingAnalysisProps {
   transactions: Transaction[]
@@ -29,9 +29,9 @@ const CATEGORY_COLORS: Record<ExpenseCategory, string> = {
   Bills: "hsl(var(--chart-3))",
   Transport: "hsl(var(--chart-4))",
   Entertainment: "hsl(var(--chart-5))",
-  Health: "hsl(190, 80%, 55%)",
-  Shopping: "hsl(50, 95%, 55%)",
-  Other: "hsl(0, 0%, 70%)",
+  Health: "hsl(10, 80%, 55%)",
+  Shopping: "hsl(262, 80%, 55%)",
+  Other: "hsl(340, 80%, 55%)",
 };
 
 export function SpendingAnalysis({ transactions }: SpendingAnalysisProps) {
