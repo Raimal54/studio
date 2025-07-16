@@ -50,14 +50,14 @@ export function InvestmentGrowthChart() {
   }
 
   return (
-    <Card>
+    <Card className="h-full flex flex-col">
       <CardHeader>
         <CardTitle>Future Value Calculator</CardTitle>
         <CardDescription>
           See how your money can grow over time with consistent investment.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="flex-1 flex flex-col space-y-6">
         <div className="space-y-4">
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
@@ -103,7 +103,7 @@ export function InvestmentGrowthChart() {
           </div>
         </div>
         
-        <div className="h-[250px] w-full">
+        <div className="flex-1 w-full">
           <ChartContainer config={chartConfig}>
             <LineChart
               data={chartData}
