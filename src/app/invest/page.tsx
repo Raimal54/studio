@@ -28,9 +28,7 @@ export default function InvestPage() {
           <div className="w-10"></div>
         </header>
 
-        <div className="h-[550px] w-full">
-            <InvestmentGrowthChart />
-        </div>
+        <InvestmentGrowthChart />
 
         <Card>
           <CardHeader>

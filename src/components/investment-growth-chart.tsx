@@ -22,6 +22,7 @@ export function InvestmentGrowthChart() {
     const monthlyRate = returnRate / 100 / 12
 
     for (let year = 1; year <= timePeriod; year++) {
+      let investedThisYear = (monthlyInvestment * 12 * (year - 1));
       for (let month = 1; month <= 12; month++) {
         futureValue = (futureValue + monthlyInvestment) * (1 + monthlyRate)
       }
@@ -50,14 +51,14 @@ export function InvestmentGrowthChart() {
   }
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card>
       <CardHeader>
         <CardTitle>Future Value Calculator</CardTitle>
         <CardDescription>
           See how your money can grow over time with consistent investment.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col space-y-6">
+      <CardContent className="space-y-6">
         <div className="space-y-4">
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
@@ -103,8 +104,8 @@ export function InvestmentGrowthChart() {
           </div>
         </div>
         
-        <div className="flex-1 w-full">
-          <ChartContainer config={chartConfig}>
+        <div className="w-full">
+          <ChartContainer config={chartConfig} className="h-[250px] w-full">
             <LineChart
               data={chartData}
               margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
@@ -122,6 +123,7 @@ export function InvestmentGrowthChart() {
                 axisLine={false}
                 tickMargin={8}
                 tickFormatter={(value) => formatCurrency(value)}
+                domain={['dataMin', 'dataMax']}
               />
               <Tooltip
                 content={
