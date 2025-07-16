@@ -1,14 +1,41 @@
 "use client"
 
 import * as React from "react"
-import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts"
+import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
+import { ChartTooltipContent } from "@/components/ui/chart"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 
 const formatCurrency = (amount: number) => {
   return `₹${amount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+};
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="rounded-lg border bg-background p-2 shadow-sm">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-col space-y-1">
+            <span className="text-[0.7rem] uppercase text-muted-foreground">
+              Year {label}
+            </span>
+          </div>
+        </div>
+        <div className="mt-2 grid gap-1.5">
+            {payload.map((item: any) => (
+                 <div key={item.name} className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full" style={{backgroundColor: item.color}} />
+                    <p className="text-sm text-muted-foreground">{item.name}:</p>
+                    <p className="text-sm font-medium">{formatCurrency(item.value)}</p>
+                 </div>
+            ))}
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export function InvestmentGrowthChart() {
@@ -37,19 +64,6 @@ export function InvestmentGrowthChart() {
   const totalInvested = monthlyInvestment * 12 * timePeriod;
   const totalReturns = chartData.length > 0 ? chartData[chartData.length - 1].returns : 0;
   const totalGains = totalReturns - totalInvested;
-
-  const chartConfig = {
-    invested: {
-      label: "Invested",
-      color: "hsl(var(--chart-2))",
-    },
-    returns: {
-      label: "Returns",
-      color: "hsl(var(--chart-1))",
-    },
-  }
-
-  const yAxisMax = Math.max(...chartData.map(d => d.returns), 0);
 
   return (
     <Card>
@@ -105,58 +119,45 @@ export function InvestmentGrowthChart() {
           </div>
         </div>
         
-        <div className="w-full">
-          <ChartContainer config={chartConfig} className="h-[250px]">
-            <LineChart
-              data={chartData}
-              margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis
-                dataKey="year"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => `Yr ${value}`}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => formatCurrency(value)}
-                domain={[0, yAxisMax]}
-              />
-              <Tooltip
-                content={
-                  <ChartTooltipContent
-                    formatter={(value, name) => (
-                      <div className="flex flex-col">
-                        <span className="capitalize text-xs text-muted-foreground">{name}</span>
-                        <span className="font-bold">{formatCurrency(value as number)}</span>
-                      </div>
-                    )}
-                    labelFormatter={(label) => `Year ${label}`}
-                  />
-                }
-              />
-              <Line
-                name="Invested"
-                type="monotone"
-                dataKey="invested"
-                stroke={chartConfig.invested.color}
-                strokeWidth={2}
-                dot={false}
-              />
-              <Line
-                name="Returns"
-                type="monotone"
-                dataKey="returns"
-                stroke={chartConfig.returns.color}
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
-          </ChartContainer>
+        <div className="h-[250px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                data={chartData}
+                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis
+                    dataKey="year"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tickFormatter={(value) => `Yr ${value}`}
+                />
+                <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tickFormatter={(value) => formatCurrency(value)}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Line
+                    name="Invested"
+                    type="monotone"
+                    dataKey="invested"
+                    stroke="#a0aec0"
+                    strokeWidth={2}
+                    dot={false}
+                />
+                <Line
+                    name="Returns"
+                    type="monotone"
+                    dataKey="returns"
+                    stroke="#48bb78"
+                    strokeWidth={3}
+                    dot={false}
+                />
+                </LineChart>
+            </ResponsiveContainer>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
             <div>
