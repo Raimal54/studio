@@ -52,7 +52,6 @@ const prompt = ai.definePrompt({
   **User's Financial Information:**
   - Monthly Income: {{income}} INR
   - Monthly Expenses (excluding debt): {{expenses}} INR
-  - Available for Debt Repayment: {{income}} - {{expenses}} = {{math income '-' expenses}} INR per month.
   - Loans:
   {{#each loans}}
     - Name: {{name}}, Balance: {{balance}} INR, APR: {{interestRate}}%, Min. Payment: {{minimumPayment}} INR
