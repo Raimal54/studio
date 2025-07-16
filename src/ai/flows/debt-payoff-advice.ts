@@ -31,10 +31,19 @@ const RepaymentStepSchema = z.object({
   monthlyPayment: z.number().describe('The total amount paid towards debts this month.'),
 });
 
+const PlanStepSchema = z.object({
+  title: z.string().describe("A short, catchy title for this step."),
+  description: z.string().describe("A detailed but easy-to-understand description of this step."),
+  iconName: z.string().describe("The name of a lucide-react icon that represents this step (e.g., 'Target', 'TrendingUp', 'ShieldCheck').")
+});
+
 const DebtPayoffAdviceOutputSchema = z.object({
   strategy: z.string().describe('The name of the recommended debt payoff strategy (e.g., "Debt Avalanche", "Debt Snowball").'),
-  summary: z.string().describe('A brief, encouraging summary of the plan and the payoff timeline.'),
-  planExplanation: z.string().describe('A detailed explanation of the recommended strategy and step-by-step instructions on how to follow it.'),
+  summary: z.string().describe('A brief, encouraging summary of the plan and the payoff timeline, speaking like a supportive older brother.'),
+  keyTakeaways: z.array(z.string()).describe("A short list of 3-4 bullet points summarizing the most important actions."),
+  planExplanation: z.string().describe('A detailed explanation of *why* this strategy was chosen, in a friendly and encouraging tone.'),
+  stepByStepGuide: z.array(PlanStepSchema).describe("A list of clear, actionable steps for the user to follow."),
+  potentialPitfalls: z.array(z.string()).describe("A list of potential challenges or pitfalls to watch out for."),
   repaymentSchedule: z.array(RepaymentStepSchema).describe('A month-by-month schedule showing the debt balance decreasing over time.'),
 });
 export type DebtPayoffAdviceOutput = z.infer<typeof DebtPayoffAdviceOutputSchema>;
@@ -47,7 +56,7 @@ const prompt = ai.definePrompt({
   name: 'debtPayoffAdvicePrompt',
   input: { schema: DebtPayoffAdviceInputSchema },
   output: { schema: DebtPayoffAdviceOutputSchema },
-  prompt: `You are an expert financial advisor specializing in debt reduction strategies. Your goal is to create a clear, actionable, and encouraging debt payoff plan for the user.
+  prompt: `You are an expert financial advisor, but you're also a wise, supportive, and motivating older brother. Your goal is to create a clear, actionable, and encouraging debt payoff plan that feels like advice from someone who truly cares.
 
   **User's Financial Information:**
   - Monthly Income: {{income}} INR
@@ -58,25 +67,25 @@ const prompt = ai.definePrompt({
   {{/each}}
 
   **Your Task:**
-  1.  **Choose the Best Strategy:** Analyze the user's loans. Decide whether the 'Debt Avalanche' (highest interest rate first) or 'Debt Snowball' (lowest balance first) method is more suitable. The 'Debt Avalanche' method is almost always mathematically superior as it saves the most money on interest. You should recommend the **Debt Avalanche** method unless there are very small loans that can be paid off quickly for a psychological win, in which case you can consider the 'Debt Snowball' method. State which strategy you've chosen.
+  1.  **Choose the Best Strategy:** Analyze the user's loans. Decide whether the 'Debt Avalanche' (highest interest rate first) or 'Debt Snowball' (lowest balance first) method is more suitable. **Strongly prefer the Debt Avalanche method** as it saves the most money. Only recommend the 'Debt Snowball' if there's a very small loan that can be paid off in 1-2 months for a quick motivational win.
 
-  2.  **Create a Plan Explanation:**
-      *   Explain the chosen strategy (Avalanche or Snowball) in simple terms.
-      *   Provide a step-by-step guide. Tell the user to pay the minimum on all loans except for the target loan. All extra money should go towards the target loan.
-      *   Once the target loan is paid off, the payment amount from that loan (minimum + extra) should be "snowballed" onto the next target loan.
-
+  2.  **Create a Plan (As a Big Brother):**
+      *   **Summary:** Write an uplifting summary. Start with something like, "Alright, let's get this handled. I've looked at your numbers, and we can absolutely build a plan to get you out of this." State the projected payoff date clearly (e.g., "You'll be debt-free in X years and Y months.").
+      *   **Key Takeaways:** Create a short bulleted list of the absolute most important things to remember.
+      *   **Plan Explanation:** Explain *why* you chose the strategy in simple, encouraging terms.
+      *   **Step-by-Step Guide:** Break the plan into 3-4 clear, actionable steps. Each step needs a short title, a description, and a relevant 'lucide-react' icon name.
+          *   Step 1 should be about focusing all extra cash on the target loan. Use icon 'Target'.
+          *   Step 2 should be about what to do after the first loan is paid off (snowballing the payment). Use icon 'TrendingUp'.
+          *   Step 3 should be about staying consistent. Use icon 'Repeat'.
+      *   **Potential Pitfalls:** Give a friendly warning about 2-3 common mistakes, like new debt or getting discouraged.
+  
   3.  **Generate a Repayment Schedule:**
       *   Calculate the month-by-month repayment schedule until all loans are paid off.
-      *   The 'monthlyPayment' in each step should be the sum of all minimum payments plus any extra available income (income - expenses - sum of minimums). If the user has a negative disposable income after minimum payments, the monthly payment is just the sum of minimums.
+      *   The 'monthlyPayment' in each step should be the sum of all minimum payments plus any extra available income (income - expenses - sum of minimums).
       *   For each month, provide the total remaining balance of all loans combined.
       *   The calculation should account for interest accruing monthly on the remaining balances. The monthly interest rate is APR / 12 / 100.
 
-  4.  **Write a Summary:**
-      *   Start with an encouraging sentence.
-      *   State the chosen strategy.
-      *   Clearly state the projected payoff date (e.g., "You'll be debt-free in X years and Y months.").
-
-  Provide the output in the specified JSON format. Ensure the 'repaymentSchedule' is accurate based on your calculations.
+  Provide the output in the specified JSON format. Ensure your tone is consistently supportive and the steps are crystal clear.
   `,
 });
 
