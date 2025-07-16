@@ -32,6 +32,10 @@ export function useTransactions() {
     setTransactions(prev => [newTransaction, ...prev]);
   };
 
+  const deleteTransaction = (id: string) => {
+    setTransactions(prev => prev.filter(t => t.id !== id));
+  };
+
   const { income, expenses, balance } = useMemo(() => {
     const income = transactions
       .filter(t => t.type === 'income')
@@ -43,5 +47,5 @@ export function useTransactions() {
     return { income, expenses, balance };
   }, [transactions]);
 
-  return { transactions, addTransaction, income, expenses, balance };
+  return { transactions, addTransaction, deleteTransaction, income, expenses, balance };
 }

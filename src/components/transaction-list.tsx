@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 
 import {
   Table,
@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Transaction } from "@/lib/types";
@@ -19,11 +20,12 @@ import { cn } from "@/lib/utils";
 
 interface TransactionListProps {
   transactions: Transaction[];
+  onDeleteTransaction: (id: string) => void;
 }
 
 type SortKey = keyof Transaction;
 
-export function TransactionList({ transactions }: TransactionListProps) {
+export function TransactionList({ transactions, onDeleteTransaction }: TransactionListProps) {
   const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
@@ -73,6 +75,7 @@ export function TransactionList({ transactions }: TransactionListProps) {
                 <TableHead onClick={() => handleSort('amount')} className="text-right cursor-pointer">
                    <div className="flex items-center justify-end">Amount {renderSortArrow('amount')}</div>
                 </TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -89,6 +92,17 @@ export function TransactionList({ transactions }: TransactionListProps) {
                     )}
                   >
                     {transaction.type === "income" ? "+" : "-"} ₹{transaction.amount.toLocaleString("en-IN")}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => onDeleteTransaction(transaction.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Delete transaction</span>
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

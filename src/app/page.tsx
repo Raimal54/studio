@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
-  const { transactions, addTransaction, income, expenses, balance } = useTransactions();
+  const { transactions, addTransaction, deleteTransaction, income, expenses, balance } = useTransactions();
 
   return (
     <main className="bg-background font-body">
@@ -31,7 +31,7 @@ export default function Home() {
             <SpendingAnalysis transactions={transactions} />
           </TabsContent>
           <TabsContent value="history" className="mt-4">
-            <TransactionList transactions={transactions} />
+            <TransactionList transactions={transactions} onDeleteTransaction={deleteTransaction} />
           </TabsContent>
         </Tabs>
         <Separator />
