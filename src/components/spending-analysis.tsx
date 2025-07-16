@@ -24,14 +24,14 @@ interface SpendingAnalysisProps {
 }
 
 const CATEGORY_COLORS: Record<ExpenseCategory, string> = {
-  Rent: "hsl(210, 80%, 60%)", // Blue
-  Groceries: "hsl(140, 60%, 50%)", // Green
-  Bills: "hsl(40, 90%, 60%)", // Orange
-  Transport: "hsl(260, 70%, 65%)", // Purple
-  Entertainment: "hsl(340, 85%, 65%)", // Pink
-  Health: "hsl(190, 80%, 55%)", // Cyan
-  Shopping: "hsl(50, 95%, 55%)", // Yellow
-  Other: "hsl(0, 0%, 70%)", // Gray
+  Rent: "hsl(var(--chart-1))",
+  Groceries: "hsl(var(--chart-2))",
+  Bills: "hsl(var(--chart-3))",
+  Transport: "hsl(var(--chart-4))",
+  Entertainment: "hsl(var(--chart-5))",
+  Health: "hsl(190, 80%, 55%)",
+  Shopping: "hsl(50, 95%, 55%)",
+  Other: "hsl(0, 0%, 70%)",
 };
 
 export function SpendingAnalysis({ transactions }: SpendingAnalysisProps) {
@@ -45,19 +45,22 @@ export function SpendingAnalysis({ transactions }: SpendingAnalysisProps) {
     return Object.entries(categoryTotals).map(([category, total]) => ({
       category,
       total,
+      fill: CATEGORY_COLORS[category as ExpenseCategory] || CATEGORY_COLORS.Other
     }));
   }, [transactions]);
 
   const chartConfig = React.useMemo(() => {
     const config: any = {};
-    categories.expense.forEach((category) => {
-      config[category] = {
-        label: category,
-        color: CATEGORY_COLORS[category],
+    if (!chartData.length) return config;
+    
+    chartData.forEach((item) => {
+       config[item.category] = {
+        label: item.category,
+        color: item.fill,
       };
     });
     return config;
-  }, []);
+  }, [chartData]);
 
   if (chartData.length === 0) {
     return (
@@ -97,7 +100,7 @@ export function SpendingAnalysis({ transactions }: SpendingAnalysisProps) {
               strokeWidth={5}
             >
               {chartData.map((entry, index) => (
-                 <Cell key={`cell-${index}`} fill={chartConfig[entry.category]?.color || CATEGORY_COLORS.Other} />
+                 <Cell key={`cell-${index}`} fill={entry.fill} />
               ))}
             </Pie>
              <ChartLegend
