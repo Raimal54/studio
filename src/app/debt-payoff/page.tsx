@@ -5,7 +5,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
-import { ArrowLeft, PlusCircle, Trash2, Bot, Loader2, Sparkles, Target, TrendingUp, Repeat, ShieldAlert, CheckCircle2, AlertTriangle, Info } from 'lucide-react';
+import { ArrowLeft, PlusCircle, Trash2, Bot, Loader2, Sparkles, Target, TrendingUp, Repeat, ShieldAlert, CheckCircle2, AlertTriangle, Info, Rocket } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -26,6 +26,7 @@ const LucideIcon = ({ name, className }: { name: string; className: string }) =>
     ShieldAlert,
     CheckCircle2,
     AlertTriangle,
+    Rocket,
   };
   const Icon = icons[name] || Info; // Fallback icon
   return <Icon className={className} />;
@@ -240,7 +241,7 @@ export default function DebtPayoffPage() {
 
             <div>
                 <h2 className="text-2xl font-bold text-center mb-6">Your Step-by-Step Guide to Freedom</h2>
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
                     {advice.stepByStepGuide.map((step, index) => (
                         <Card key={index} className="flex flex-col">
                             <CardHeader className="flex flex-row items-center gap-4">
