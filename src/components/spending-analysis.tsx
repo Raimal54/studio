@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Pie, PieChart, Cell } from "recharts"
+import { Bar, BarChart, XAxis, YAxis, ResponsiveContainer } from "recharts"
 
 import {
   Card,
@@ -10,59 +10,40 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-} from "@/components/ui/chart"
-import { type Transaction, type ExpenseCategory } from "@/lib/types"
+
+import { type Transaction, type ExpenseCategory, type Budget } from "@/lib/types"
+import { Progress } from "./ui/progress"
+import { cn } from "@/lib/utils"
 
 interface SpendingAnalysisProps {
-  transactions: Transaction[]
+  transactions: Transaction[];
+  budgets: Budget[];
 }
 
-const CATEGORY_COLORS: Record<ExpenseCategory, string> = {
-  Rent: "hsl(var(--chart-1))",
-  Groceries: "hsl(var(--chart-2))",
-  Bills: "hsl(var(--chart-3))",
-  Transport: "hsl(var(--chart-4))",
-  Entertainment: "hsl(var(--chart-5))",
-  Health: "hsl(10, 80%, 55%)",
-  Shopping: "hsl(262, 80%, 55%)",
-  Other: "hsl(340, 80%, 55%)",
-};
-
-export function SpendingAnalysis({ transactions }: SpendingAnalysisProps) {
-  const chartData = React.useMemo(() => {
+export function SpendingAnalysis({ transactions, budgets }: SpendingAnalysisProps) {
+  const categoryTotals = React.useMemo(() => {
     const expenseData = transactions.filter((t) => t.type === "expense");
-    const categoryTotals = expenseData.reduce((acc, curr) => {
+    return expenseData.reduce((acc, curr) => {
       acc[curr.category] = (acc[curr.category] || 0) + curr.amount;
       return acc;
     }, {} as Record<string, number>);
-
-    return Object.entries(categoryTotals).map(([category, total]) => ({
-      category,
-      total,
-      fill: CATEGORY_COLORS[category as ExpenseCategory] || CATEGORY_COLORS.Other
-    }));
   }, [transactions]);
-
-  const chartConfig = React.useMemo(() => {
-    const config: any = {};
-    if (!chartData.length) return config;
-    
-    chartData.forEach((item) => {
-       config[item.category] = {
-        label: item.category,
-        color: item.fill,
-      };
+  
+  const budgetData = React.useMemo(() => {
+    return budgets.map(budget => {
+      const spent = categoryTotals[budget.category as ExpenseCategory] || 0;
+      const progress = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
+      return {
+        ...budget,
+        spent,
+        progress: Math.min(progress, 100), // Cap at 100%
+        over: progress > 100
+      }
     });
-    return config;
-  }, [chartData]);
+  }, [budgets, categoryTotals]);
 
-  if (chartData.length === 0) {
+
+  if (transactions.filter(t=>t.type==='expense').length === 0) {
     return (
       <Card className="flex flex-col items-center justify-center h-80">
         <CardHeader>
@@ -79,36 +60,25 @@ export function SpendingAnalysis({ transactions }: SpendingAnalysisProps) {
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Spending Analysis</CardTitle>
-        <CardDescription>Your expenses by category</CardDescription>
+        <CardTitle>Spending vs. Budgets</CardTitle>
+        <CardDescription>Your spending progress for this month.</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]"
-        >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Pie
-              data={chartData}
-              dataKey="total"
-              nameKey="category"
-              innerRadius={60}
-              strokeWidth={5}
-            >
-              {chartData.map((entry, index) => (
-                 <Cell key={`cell-${index}`} fill={entry.fill} />
-              ))}
-            </Pie>
-             <ChartLegend
-              content={<ChartLegendContent nameKey="category" />}
-              className="-translate-y-[2rem] flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
-            />
-          </PieChart>
-        </ChartContainer>
+      <CardContent className="flex-1 pb-4">
+        <div className="space-y-4 mt-4">
+            {budgetData.length > 0 ? budgetData.map(item => (
+                <div key={item.category} className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                        <span className="font-medium">{item.category}</span>
+                        <span className={cn("font-mono", item.over ? "text-destructive" : "text-muted-foreground")}>
+                          ₹{item.spent.toLocaleString()} / ₹{item.amount.toLocaleString()}
+                        </span>
+                    </div>
+                    <Progress value={item.progress} className={cn(item.over && "[&>div]:bg-destructive")} />
+                </div>
+            )) : (
+              <p className="text-muted-foreground text-center text-sm py-4">No budgets set. Go to the Budgets tab to create one.</p>
+            )}
+        </div>
       </CardContent>
     </Card>
   )

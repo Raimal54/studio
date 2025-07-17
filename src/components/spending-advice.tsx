@@ -15,6 +15,8 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { Transaction } from "@/lib/types"
+import { useBudget } from "@/hooks/use-budget"
+import { useGoals } from "@/hooks/use-goals"
 
 interface SpendingAdviceProps {
   income: number
@@ -26,6 +28,8 @@ export function SpendingAdvice({ income, transactions }: SpendingAdviceProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isOpen, setIsOpen] = useState(false)
+  const { budgets } = useBudget();
+  const { goals } = useGoals();
 
   const handleGetAdvice = async () => {
     setIsLoading(true)
@@ -49,6 +53,8 @@ export function SpendingAdvice({ income, transactions }: SpendingAdviceProps) {
       income: income,
       spendingData: JSON.stringify(spendingData),
       monthsAhead: 3,
+      budgets: JSON.stringify(budgets),
+      goals: JSON.stringify(goals)
     };
 
     try {

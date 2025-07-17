@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Trash2, Repeat } from "lucide-react";
 
 import {
   Table,
@@ -82,8 +82,9 @@ export function TransactionList({ transactions, onDeleteTransaction }: Transacti
               {sortedTransactions.map((transaction) => (
                 <TableRow key={transaction.id}>
                   <TableCell>{format(new Date(transaction.date), "MMM d, yyyy")}</TableCell>
-                  <TableCell>
+                  <TableCell className="flex items-center gap-2">
                     <Badge variant="secondary">{transaction.category}</Badge>
+                    {transaction.recurrence && <Repeat className="h-4 w-4 text-muted-foreground" title={`Recurring ${transaction.recurrence}`} />}
                   </TableCell>
                   <TableCell
                     className={cn(

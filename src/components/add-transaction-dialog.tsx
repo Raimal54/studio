@@ -39,8 +39,9 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { categories, type Transaction } from "@/lib/types";
+import { categories, type Transaction, recurrenceOptions, type Recurrence } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { Switch } from "./ui/switch";
 
 interface AddTransactionDialogProps {
   type: "income" | "expense";
@@ -51,6 +52,8 @@ const formSchema = z.object({
   amount: z.coerce.number().positive("Amount must be positive."),
   category: z.string().min(1, "Category is required."),
   date: z.date(),
+  isRecurring: z.boolean().default(false),
+  recurrence: z.string().optional(),
 });
 
 export function AddTransactionDialog({ type, onAddTransaction }: AddTransactionDialogProps) {
@@ -63,6 +66,8 @@ export function AddTransactionDialog({ type, onAddTransaction }: AddTransactionD
       amount: 0,
       category: "",
       date: new Date(),
+      isRecurring: false,
+      recurrence: 'monthly',
     },
   });
 
@@ -72,6 +77,7 @@ export function AddTransactionDialog({ type, onAddTransaction }: AddTransactionD
       type,
       date: values.date.toISOString(),
       category: values.category as Transaction['category'],
+      recurrence: values.isRecurring ? values.recurrence as Recurrence : undefined,
     });
     
     toast({
@@ -79,11 +85,12 @@ export function AddTransactionDialog({ type, onAddTransaction }: AddTransactionD
       description: `Your ${type} has been added.`,
     });
     
-    form.reset();
+    form.reset({ amount: 0, category: '', date: new Date(), isRecurring: false, recurrence: 'monthly' });
     setOpen(false);
   };
 
   const categoryList = type === "income" ? categories.income : categories.expense;
+  const isRecurring = form.watch('isRecurring');
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -169,9 +176,6 @@ export function AddTransactionDialog({ type, onAddTransaction }: AddTransactionD
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
                         initialFocus
                       />
                     </PopoverContent>
@@ -180,6 +184,55 @@ export function AddTransactionDialog({ type, onAddTransaction }: AddTransactionD
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="isRecurring"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel>Recurring Transaction</FormLabel>
+                    <FormDescription>
+                      Is this a recurring income or expense?
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            
+            {isRecurring && (
+              <FormField
+                control={form.control}
+                name="recurrence"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Frequency</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select frequency" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {recurrenceOptions.map((opt) => (
+                          <SelectItem key={opt} value={opt}>
+                            {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             <Button type="submit" className="w-full">Save Transaction</Button>
           </form>
         </Form>
