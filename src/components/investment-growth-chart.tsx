@@ -3,7 +3,6 @@
 import * as React from "react"
 import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartTooltipContent } from "@/components/ui/chart"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 
@@ -64,6 +63,7 @@ export function InvestmentGrowthChart() {
   const totalInvested = monthlyInvestment * 12 * timePeriod;
   const totalReturns = chartData.length > 0 ? chartData[chartData.length - 1].returns : 0;
   const totalGains = totalReturns - totalInvested;
+  const maxReturnValue = totalReturns * 1.1;
 
   return (
     <Card>
@@ -138,13 +138,14 @@ export function InvestmentGrowthChart() {
                     axisLine={false}
                     tickMargin={8}
                     tickFormatter={(value) => formatCurrency(value)}
+                    domain={[0, maxReturnValue]}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Line
                     name="Invested"
                     type="monotone"
                     dataKey="invested"
-                    stroke="#a0aec0"
+                    stroke="hsl(var(--muted-foreground))"
                     strokeWidth={2}
                     dot={false}
                 />
@@ -152,7 +153,7 @@ export function InvestmentGrowthChart() {
                     name="Returns"
                     type="monotone"
                     dataKey="returns"
-                    stroke="#48bb78"
+                    stroke="hsl(var(--primary))"
                     strokeWidth={3}
                     dot={false}
                 />

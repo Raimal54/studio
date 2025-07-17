@@ -56,14 +56,14 @@ export default function InvestPage() {
             <CardDescription>Take the next step towards your financial future.</CardDescription>
           </CardHeader>
           <CardContent>
-            <a href="https://groww.in/" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.google.com/search?q=best+investment+platforms+in+india" target="_blank" rel="noopener noreferrer">
               <Button className="w-full" size="lg">
-                Invest with Groww
+                Explore Investment Platforms
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </a>
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              You will be redirected to the Groww website. We are not affiliated with Groww.
+             You will be redirected to Google. Please do your own research before investing.
             </p>
           </CardContent>
         </Card>

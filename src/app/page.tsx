@@ -39,10 +39,10 @@ export default function Home() {
             <TabsTrigger value="overview">Analysis</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
             <TabsTrigger value="invest">
-              Investing <ArrowRight className="w-4 h-4 ml-1" />
+              Investing
             </TabsTrigger>
             <TabsTrigger value="debt">
-              Debt <Landmark className="w-4 h-4 ml-1" />
+              Debt
             </TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="mt-4">
